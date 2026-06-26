@@ -1,6 +1,6 @@
 # Weather Pipeline
 
-A simple data engineering project that fetches weather data from a public API and stores it in a PostgreSQL database.
+A simple data pipeline project that fetches weather data from a public API and stores it in a PostgreSQL database.
 
 ## Features
 
