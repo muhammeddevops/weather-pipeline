@@ -8,6 +8,7 @@ A simple data pipeline project that fetches weather data from a public API and s
 - Extracts the fields needed for analysis
 - Loads the data into PostgreSQL using psycopg2
 - Can be run repeatedly to collect weather data over time
+- Automated scheduling using Linux cron (runs hourly)
 
 ## Tech Stack
 
@@ -49,5 +50,5 @@ The pipeline stores weather information such as:
 
 - Docker support
 - Environment variables for configuration
-- Scheduled runs using Airflow
+- Scheduled runs using cron (Now completed)
 - Data validation and error handling
