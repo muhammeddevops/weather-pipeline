@@ -3,13 +3,21 @@ import psycopg2
 
 url = "https://api.open-meteo.com/v1/forecast"
 
-city = input('Enter a city:')
+user_input = input('Enter a city:')
 
 geo_url = "https://geocoding-api.open-meteo.com/v1/search"
 
-geo_response = requests.get(geo_url, params={"name": city, "count": 1})
+geo_response = requests.get(geo_url, params={"name": user_input, "count": 1})
 
 geo_data = geo_response.json()
+
+
+city = geo_data['results'][0]['name']
+country = geo_data['results'][0]['country']
+
+if not geo_data.get("results"):
+    print("Invalid city. No data found.")
+    exit()
 
 latitude = geo_data["results"][0]["latitude"]
 longitude = geo_data["results"][0]["longitude"]
@@ -20,8 +28,6 @@ params = {
     "current_weather": True
 }
 
-
-
 response = requests.get(url, params=params)
 
 data = response.json()
@@ -29,6 +35,7 @@ data = response.json()
 temperature = data['current_weather']['temperature']
 windspeed = data['current_weather']['windspeed']
 
+print(f"In {city}, {country}")
 print('The temperature is currently ', temperature)
 print('And the wind speed is currently ', windspeed)
 
@@ -45,12 +52,15 @@ conn = psycopg2.connect(
 
 cursor = conn.cursor()
 
+#cursor.execute("DROP TABLE weather_data")
+
 cursor.execute(
     """
     CREATE TABLE IF NOT EXISTS weather_data (
         id SERIAL PRIMARY KEY,
         recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         city CHAR(50),
+        country CHAR(50),
         temperature FLOAT,
         windspeed FLOAT
     );
@@ -60,10 +70,10 @@ cursor.execute(
 cursor.execute(
     """
     INSERT INTO weather_data
-    (city, temperature, windspeed)
-    VALUES (%s, %s, %s)
+    (city, country, temperature, windspeed)
+    VALUES (%s, %s, %s, %s)
     """,
-    (city, temperature, windspeed)
+    (city, country, temperature, windspeed)
 )
 
 conn.commit()
