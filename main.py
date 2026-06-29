@@ -1,5 +1,4 @@
 import requests
-from sqlalchemy import create_engine, text
 import psycopg2
 
 url = "https://api.open-meteo.com/v1/forecast"
@@ -35,34 +34,6 @@ print('And the wind speed is currently ', windspeed)
 
 connection_uri = "postgresql+psycopg2://postgres:newpassword123@localhost:5432/weather_project"
 
-engine = create_engine(connection_uri)
-
-'''
-with engine.begin() as conn:
-    conn.execute(text("DROP TABLE weather_data"))
-'''
-
-
-'''
-with engine.begin() as conn:
-    conn.execute(text("""
-        CREATE TABLE IF NOT EXISTS weather_data (
-            id SERIAL PRIMARY KEY,
-            recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            temperature NUMERIC,
-            windspeed NUMERIC     
-    )
-"""))
-    
-with engine.begin() as conn:
-    conn.execute(text("""
-        INSERT INTO weather_data (temperature, windspeed)
-        VALUES (:temperature, :windspeed)
-"""), {
-    'temperature': temperature,
-    'windspeed': windspeed
-})
-'''
 
 conn = psycopg2.connect(
     database='weather_project',
