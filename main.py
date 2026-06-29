@@ -4,11 +4,24 @@ import psycopg2
 
 url = "https://api.open-meteo.com/v1/forecast"
 
+city = input('Enter a city:')
+
+geo_url = "https://geocoding-api.open-meteo.com/v1/search"
+
+geo_response = requests.get(geo_url, params={"name": city, "count": 1})
+
+geo_data = geo_response.json()
+
+latitude = geo_data["results"][0]["latitude"]
+longitude = geo_data["results"][0]["longitude"]
+
 params = {
-    "latitude": 53.48,
-    "longitude": -2.24,
+    "latitude": latitude,
+    "longitude": longitude,
     "current_weather": True
 }
+
+
 
 response = requests.get(url, params=params)
 
@@ -24,10 +37,10 @@ connection_uri = "postgresql+psycopg2://postgres:newpassword123@localhost:5432/w
 
 engine = create_engine(connection_uri)
 
-"""
+'''
 with engine.begin() as conn:
     conn.execute(text("DROP TABLE weather_data"))
-"""
+'''
 
 
 '''
@@ -66,8 +79,9 @@ cursor.execute(
     CREATE TABLE IF NOT EXISTS weather_data (
         id SERIAL PRIMARY KEY,
         recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        temperature float,
-        windspeed float
+        city CHAR(50),
+        temperature FLOAT,
+        windspeed FLOAT
     );
 """
 )
@@ -75,10 +89,10 @@ cursor.execute(
 cursor.execute(
     """
     INSERT INTO weather_data
-    (temperature, windspeed)
-    VALUES (%s, %s)
+    (city, temperature, windspeed)
+    VALUES (%s, %s, %s)
     """,
-    (temperature, windspeed)
+    (city, temperature, windspeed)
 )
 
 conn.commit()

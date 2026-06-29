@@ -5,6 +5,7 @@ A simple data pipeline project that fetches weather data from a public API and s
 ## Features
 
 - Fetches current weather data from an API
+- Allows user to input a city dynamically at runtime
 - Extracts the fields needed for analysis
 - Loads the data into PostgreSQL using psycopg2
 - Can be run repeatedly to collect weather data over time
@@ -16,6 +17,16 @@ A simple data pipeline project that fetches weather data from a public API and s
 - PostgreSQL
 - psycopg2
 - Requests
+
+## Database Schema
+
+The project stores weather data in a PostgreSQL table called `weather_data`.
+
+Current columns:
+
+- temperature (numeric)
+- windspeed (numeric)
+- city (text)
 
 ## Setup
 
