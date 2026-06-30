@@ -8,11 +8,9 @@ from datetime import datetime
 
 load_dotenv()
 
-
-url = "https://api.open-meteo.com/v1/forecast"
-
 user_input = input('Enter a city: ').strip()
 
+url = "https://api.open-meteo.com/v1/forecast"
 geo_url = "https://geocoding-api.open-meteo.com/v1/search"
 
 geo_response = requests.get(geo_url, params={"name": user_input, "count": 1}, timeout=10)
@@ -78,7 +76,6 @@ conn = psycopg2.connect(
 cursor = conn.cursor()
 
 #cursor.execute("DROP TABLE weather_data")
-
 cursor.execute(
     """
     CREATE TABLE IF NOT EXISTS weather_data (
@@ -105,4 +102,4 @@ conn.commit()
 cursor.close()
 conn.close()
 
-print('Data inserted succesfully')    
+print('Data inserted succesfully')
