@@ -11,17 +11,18 @@ load_dotenv()
 
 url = "https://api.open-meteo.com/v1/forecast"
 
-user_input = input('Enter a city: ')
+user_input = input('Enter a city: ').strip()
 
 geo_url = "https://geocoding-api.open-meteo.com/v1/search"
 
-geo_response = requests.get(geo_url, params={"name": user_input, "count": 1})
+geo_response = requests.get(geo_url, params={"name": user_input, "count": 1}, timeout=10)
+
+geo_response.raise_for_status()  # Raises an exception if the status isn't 200-series
 
 geo_data = geo_response.json()
 
 if not geo_data.get("results"):
-    print("Invalid city. No data found.")
-    exit()
+    raise ValueError("Invalid city. No data found.")
 
 
 city = geo_data['results'][0]['name']
@@ -36,12 +37,14 @@ params = {
     "current_weather": True
 }
 
-response = requests.get(url, params=params)
+response = requests.get(url, params=params, timeout=10)
 
-data = response.json()
+response.raise_for_status()  # Raises an exception if the status isn't 200-series
 
-temperature = data['current_weather']['temperature']
-windspeed = data['current_weather']['windspeed']
+weather_data = response.json()
+
+temperature = weather_data['current_weather']['temperature']
+windspeed = weather_data['current_weather']['windspeed']
 
 filename = 'weather' + datetime.now().strftime("%Y-%m-%d-%H-%M.json")
 
@@ -55,7 +58,7 @@ blob = container.get_blob_client(filename)
 
 
 with open(filename, "w") as file:
-    json.dump(data, file, indent=4)
+    json.dump(weather_data, file, indent=4)
 
 with open(filename, 'rb') as file:
     blob.upload_blob(file, overwrite=True)
@@ -63,9 +66,6 @@ with open(filename, 'rb') as file:
 print(f"In {city}, {country}")
 print('The temperature is currently ', temperature)
 print('And the wind speed is currently ', windspeed)
-
-connection_uri = "postgresql+psycopg2://postgres:newpassword123@localhost:5432/weather_project"
-
 
 conn = psycopg2.connect(
     database='weather_project',
@@ -102,6 +102,7 @@ cursor.execute(
 )
 
 conn.commit()
-
+cursor.close()
+conn.close()
 
 print('Data inserted succesfully')    
