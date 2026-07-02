@@ -1,4 +1,10 @@
 import psycopg2
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 def get_connection():
     return psycopg2.connect(
@@ -25,6 +31,7 @@ def create_table(conn):
     """
     )
     conn.commit()
+
     cursor.close()
     
 
@@ -41,7 +48,8 @@ def insert_weather_to_db(conn, city, country, temperature, windspeed):
         query,
         (city, country, temperature, windspeed)
         )
-    conn.commit()
+    conn.commit()    
+    logging.info("Successfully inserted row into PostgeSQL")
     cursor.close()
 
 def close_connection(conn):

@@ -1,7 +1,13 @@
 import requests
+import logging
 from dotenv import load_dotenv
 
 load_dotenv()
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 geo_url = "https://geocoding-api.open-meteo.com/v1/search"
 
@@ -28,11 +34,15 @@ def extract(latitude, longitude):
     "longitude": longitude,
     "current_weather": True
     }
-
-    response = requests.get(url, params=params, timeout=10)
-    response.raise_for_status()  # Raises an exception if the status isn't 200-series
-    response.json()
-
+    try:
+        logging.info("Fetching weather data...")
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()  # Raises an exception if the status isn't 200-series
+        logging.info("Weather data retrieved succesfully")
+        response.json()
+    except:
+        logging.error("Failed to connect to weather API.")
+        raise
     return response.json()
 
 
