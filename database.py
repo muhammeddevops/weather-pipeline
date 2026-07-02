@@ -1,10 +1,7 @@
 import psycopg2
 import logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
-)
+
 
 def get_connection():
     return psycopg2.connect(

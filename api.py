@@ -4,11 +4,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
-)
-
 geo_url = "https://geocoding-api.open-meteo.com/v1/search"
 
 def get_coordinates(city):

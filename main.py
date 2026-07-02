@@ -4,8 +4,14 @@ from api import get_coordinates, extract
 from transform import transform_geo_data, transform_weather_data
 from storage import upload_raw_to_blob, container
 from database import get_connection, create_table, insert_weather_to_db, close_connection
+import logging
 
-load_dotenv()    
+load_dotenv()
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 user_input = input('Enter a city: ').strip()
 filename = 'weather' + datetime.now().strftime("%Y-%m-%d-%H-%M.json")

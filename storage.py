@@ -3,10 +3,6 @@ from azure.storage.blob import BlobServiceClient
 import os
 import logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
-)
 
 def upload_raw_to_blob(blob_service, filename, weather_data):
     blob = blob_service.get_blob_client(filename)
