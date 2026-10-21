@@ -1,15 +1,15 @@
 import psycopg2
 import logging
-
+import os
 
 
 def get_connection():
     return psycopg2.connect(
-    database='weather_project',
-    user='postgres',
-    password='newpassword123',
-    host='localhost',
-    port='5432'
+    database=os.getenv("DB_DATABASE"),
+    user=os.getenv('DB_USER'),
+    password=os.getenv("DB_PASSWORD"),
+    host=os.getenv("DB_HOST", "localhost"),
+    port=os.getenv("DB_PORT", "5432")
     )
 
 def create_table(conn):

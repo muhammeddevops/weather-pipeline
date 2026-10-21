@@ -1,10 +1,8 @@
 import logging
 from dotenv import load_dotenv
-from datetime import datetime
 
 from api import get_coordinates, extract
 from transform import transform_geo_data, transform_weather_data
-from storage import upload_raw_to_blob, container
 from database import (
     get_connection,
     create_table,
@@ -21,7 +19,6 @@ logging.basicConfig(
 
 def main():
     user_input = input('Enter a city: ').strip()
-    filename = 'weather' + datetime.now().strftime("%Y-%m-%d-%H-%M.json")
     
     # Extract
     latitude, longitude, geo_data = get_coordinates(user_input)
@@ -31,9 +28,6 @@ def main():
     temp, wind = transform_weather_data(weather_data)
     city, country = transform_geo_data(geo_data)
     
-    # Load to Azure Blob
-    upload_raw_to_blob(container, filename, weather_data)
-
     # Load to PostgreSQL
     conn = get_connection()
 
