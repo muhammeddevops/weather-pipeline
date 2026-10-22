@@ -1,5 +1,12 @@
+#Environment variables and secrets
 .env
+
+#Python virtual environment
 .venv/
+
+#Python cache files
 __pycache__/
 *.pyc
+
+#Generated weather JSON files
 weather*.json
