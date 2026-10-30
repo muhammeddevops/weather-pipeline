@@ -1,5 +1,5 @@
-
 from transform import transform_geo_data, transform_weather_data
+import pytest
 
 
 def test_transform_geo_data():
@@ -38,9 +38,6 @@ def test_transform_weather_data_missing_windspeed():
             "temperature": 15.5
         }
     }
-    try:
-        transform_weather_data(weather_data)
-    except KeyError:
-        return
 
-    assert False, "Expected a KeyError when windspeed is missing"
+    with pytest.raises(KeyError):
+        transform_weather_data(weather_data)
