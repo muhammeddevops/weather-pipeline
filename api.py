@@ -39,5 +39,3 @@ def extract(latitude, longitude):
         logging.error("Failed to connect to weather API.")
         raise
     return response.json()
-
-
