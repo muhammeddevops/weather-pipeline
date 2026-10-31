@@ -62,3 +62,15 @@ def test_extract_api_error(mock_get):
     #Act and Assert: Call extract() and check that it raises a HTTPError
     with pytest.raises(requests.exceptions.HTTPError):
         extract(53.48, -2.24)
+
+
+@patch("api.requests.get")
+def test_get_coordinates_city_not_found(mock_get):
+    # Arrange
+    mock_response = Mock()
+    mock_response.json.return_value = {"results": []}
+    mock_get.return_value = mock_response
+
+    # Act & Assert
+    with pytest.raises(ValueError, match="Invalid city"):
+        get_coordinates("NotARealCity")
