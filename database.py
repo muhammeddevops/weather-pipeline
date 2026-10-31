@@ -55,3 +55,5 @@ def close_connection(conn):
 def drop_table(conn):
     cursor = conn.cursor()
     cursor.execute("DROP TABLE weather_data")
+    conn.commit()
+    cursor.close()

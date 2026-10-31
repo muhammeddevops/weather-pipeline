@@ -3,11 +3,25 @@ from unittest.mock import Mock, patch
 
 from database import (
     get_connection,
+    drop_table,
     create_table,
     insert_weather_to_db,
     close_connection
 )
 
+def test_drop_table():
+    # Arrange
+    mock_conn = Mock()
+    mock_cursor = Mock()
+    mock_conn.cursor.return_value = mock_cursor
+
+    # Act
+    drop_table(mock_conn)
+
+    # Assert
+    mock_cursor.execute.assert_called_once_with(
+        "DROP TABLE weather_data"
+    )
 
 def test_get_connection(monkeypatch):
     # Arrange: Set up environment variables
