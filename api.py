@@ -24,18 +24,18 @@ def get_coordinates(city):
 
 def extract(latitude, longitude):
     url = "https://api.open-meteo.com/v1/forecast"
+    
     params = {
     "latitude": latitude,
     "longitude": longitude,
     "current_weather": True
     }
-    try:
-        logging.info("Fetching weather data...")
-        response = requests.get(url, params=params, timeout=10)
-        response.raise_for_status()  # Raises an exception if the status isn't 200-series
-        logging.info("Weather data retrieved succesfully")
-        response.json()
-    except:
-        logging.error("Failed to connect to weather API.")
-        raise
+
+    logging.info("Fetching weather data...")
+    
+    response = requests.get(url, params=params, timeout=10)
+    response.raise_for_status()  # Raises an exception if the status isn't 200-series
+    
+    logging.info("Weather data retrieved succesfully")
+    
     return response.json()

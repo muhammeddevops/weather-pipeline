@@ -1,6 +1,8 @@
 from unittest.mock import Mock, patch
-
+import psycopg2
 import main
+import requests
+import runpy
 
 
 def test_main_success(capsys):
@@ -66,3 +68,57 @@ def test_main_success(capsys):
     assert "The temperature is currently 15.5" in output
     assert "The wind speed is currently 12.3" in output
     assert "Data inserted successfully" in output
+
+
+def test_main_database_connection_error(capsys):
+    # Arrange
+    mock_conn = Mock()
+
+    with (
+        patch("builtins.input", return_value="Manchester"),
+        patch("main.get_coordinates", return_value=(53.48, -2.24, {})),
+        patch("main.extract", return_value={}),
+        patch("main.transform_weather_data", return_value=(15.5, 12.3)),
+        patch("main.transform_geo_data", return_value=("Manchester", "United Kingdom")),
+        patch("main.get_connection", return_value=mock_conn),
+        patch("main.create_table"),
+        patch("main.insert_weather_to_db", side_effect=psycopg2.Error),
+        patch("main.close_connection") as mock_close
+    ):
+        # Act
+        main.main() 
+
+    # Assert
+    output = capsys.readouterr().out
+
+    assert "Unable to save weather data to the database." in output
+    mock_close.assert_called_once_with(mock_conn)
+
+
+def test_main_invalid_city(capsys):
+    # Arrange
+    with (
+        patch("builtins.input", return_value="InvalidCity"),
+        patch("main.get_coordinates", side_effect=ValueError("Invalid city"))
+    ):
+        # Act
+        main.main()
+
+    # Assert
+    output = capsys.readouterr().out
+    assert "City not found. Please check the city name." in output
+
+
+def test_main_api_error(capsys):
+    # Arrange
+    with (
+        patch("builtins.input", return_value="Manchester"),
+        patch("main.get_coordinates", return_value=(53.48, -2.24, {})),
+        patch("main.extract", side_effect=requests.exceptions.RequestException)
+    ):
+        # Act
+        main.main()
+
+    # Assert
+    output = capsys.readouterr().out
+    assert "Unable to retrieve weather data. Please try again later." in output
