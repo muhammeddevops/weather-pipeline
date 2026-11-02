@@ -3,7 +3,7 @@ import pytest
 
 
 def test_transform_geo_data():
-    #Arrange: Set up the test data
+    # Arrange: Set up the test data
     geo_data = {
         "results": [
             {
@@ -12,32 +12,36 @@ def test_transform_geo_data():
             }
         ]
     }
-    #Act: Run the function and store the result
+    # Act: Run the function and store the result
     result = transform_geo_data(geo_data)
 
-    #Assert: Assert that the result is as expected
+    # Assert: Assert that the result is as expected
     assert result == ("Manchester", "United Kingdom")
 
 
 def test_transform_weather_data():
+    # Arrange
     weather_data = {
         "current_weather": {
             "temperature": 15.5,
             "windspeed": 12.3
         }
     }
-
+    # Act
     result = transform_weather_data(weather_data)
 
+    # Assert
     assert result == (15.5, 12.3)
 
 
 def test_transform_weather_data_missing_windspeed():
+    # Arrange
     weather_data = {
         "current_weather": {
             "temperature": 15.5
         }
     }
 
+    # Act & Assert
     with pytest.raises(KeyError):
         transform_weather_data(weather_data)

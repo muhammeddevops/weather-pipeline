@@ -1,11 +1,7 @@
-from dotenv import load_dotenv
-
 from database import get_connection, create_table, insert_weather_to_db
 
 def test_insert_weather_to_postgres(monkeypatch):
     # Arrange
-    load_dotenv()
-
     monkeypatch.setenv('DB_DATABASE', 'weather_project_test')
     monkeypatch.setenv('DB_HOST', 'localhost')
     monkeypatch.setenv('DB_PORT', '5433')
@@ -44,6 +40,7 @@ def test_insert_weather_to_postgres(monkeypatch):
 
         assert result == (city, country, 15.5, 12.3)
 
+    # Test clean up
     finally:
         cursor.execute(
             "DELETE FROM weather_data WHERE city = %s AND country = %s",

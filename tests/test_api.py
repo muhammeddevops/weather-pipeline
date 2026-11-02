@@ -2,7 +2,7 @@ import pytest
 import requests
 from unittest.mock import Mock, patch
 
-from api import get_coordinates, extract
+from api import get_coordinates, fetch_weather_data
 
 @patch("api.requests.get")
 def test_get_coordinates_success(mock_get):
@@ -41,8 +41,8 @@ def test_extract_success(mock_get):
     }
     mock_get.return_value = mock_response
 
-    #Act: Call extract() with the test coordinates and assign it to result 
-    result = extract(53.48, -2.24)
+    #Act: Call fetch_weather_data() with the test coordinates and assign it to result 
+    result = fetch_weather_data(53.48, -2.24)
 
     #Assert: Check that the returned data contains the expected values
     assert result["current_weather"]["temperature"] == 15.5
@@ -59,9 +59,9 @@ def test_extract_api_error(mock_get):
     )
     mock_get.return_value = mock_response
 
-    #Act and Assert: Call extract() and check that it raises a HTTPError
+    #Act and Assert: Call fetch_weather_data() and check that it raises a HTTPError
     with pytest.raises(requests.exceptions.HTTPError):
-        extract(53.48, -2.24)
+        fetch_weather_data(53.48, -2.24)
 
 
 @patch("api.requests.get")

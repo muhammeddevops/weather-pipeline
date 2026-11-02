@@ -1,5 +1,5 @@
 
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, MagicMock, patch
 
 from database import (
     get_connection,
@@ -8,20 +8,6 @@ from database import (
     insert_weather_to_db,
     close_connection
 )
-
-def test_drop_table():
-    # Arrange
-    mock_conn = Mock()
-    mock_cursor = Mock()
-    mock_conn.cursor.return_value = mock_cursor
-
-    # Act
-    drop_table(mock_conn)
-
-    # Assert
-    mock_cursor.execute.assert_called_once_with(
-        "DROP TABLE weather_data"
-    )
 
 def test_get_connection(monkeypatch):
     # Arrange: Set up environment variables
@@ -51,9 +37,10 @@ def test_get_connection(monkeypatch):
 
 def test_create_table():
     # Arrange
-    mock_conn = Mock()
-    mock_cursor = Mock()
-    mock_conn.cursor.return_value = mock_cursor
+    mock_conn = MagicMock()
+    mock_cursor = MagicMock()
+
+    mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
 
     # Act
     create_table(mock_conn)
@@ -63,14 +50,13 @@ def test_create_table():
 
     assert "CREATE TABLE IF NOT EXISTS weather_data" in sql
     mock_conn.commit.assert_called_once()
-    mock_cursor.close.assert_called_once()
 
 
 def test_insert_weather_to_db():
     # Arrange
-    mock_conn = Mock()
-    mock_cursor = Mock()
-    mock_conn.cursor.return_value = mock_cursor
+    mock_conn = MagicMock()
+    mock_cursor = MagicMock()
+    mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
 
     # Act
     insert_weather_to_db(
@@ -87,7 +73,6 @@ def test_insert_weather_to_db():
     assert "INSERT INTO weather_data" in sql
     assert values == ("Manchester", "United Kingdom", 15.5, 12.3)
     mock_conn.commit.assert_called_once()
-    mock_cursor.close.assert_called_once()
 
 
 def test_close_connection():
@@ -99,3 +84,17 @@ def test_close_connection():
 
     # Assert
     mock_conn.close.assert_called_once()
+
+def test_drop_table():
+    # Arrange
+    mock_conn = MagicMock()
+    mock_cursor = MagicMock()
+    mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
+
+    # Act
+    drop_table(mock_conn)
+
+    # Assert
+    mock_cursor.execute.assert_called_once_with(
+        "DROP TABLE IF EXISTS weather_data"
+    )

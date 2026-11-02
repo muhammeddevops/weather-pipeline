@@ -2,8 +2,6 @@ from unittest.mock import Mock, patch
 import psycopg2
 import main
 import requests
-import runpy
-
 
 def test_main_success(capsys):
     # Arrange
@@ -27,7 +25,7 @@ def test_main_success(capsys):
 
     with patch("builtins.input", return_value=" Manchester "), \
          patch("main.get_coordinates") as mock_coordinates, \
-         patch("main.extract") as mock_extract, \
+         patch("main.fetch_weather_data") as mock_extract, \
          patch("main.transform_weather_data") as mock_transform_weather, \
          patch("main.transform_geo_data") as mock_transform_geo, \
          patch("main.get_connection", return_value=mock_conn), \
@@ -64,10 +62,10 @@ def test_main_success(capsys):
 
     output = capsys.readouterr().out
 
-    assert "In Manchester, United Kingdom" in output
-    assert "The temperature is currently 15.5" in output
-    assert "The wind speed is currently 12.3" in output
-    assert "Data inserted successfully" in output
+    assert "\nWeather in Manchester, United Kingdom" in output
+    assert "\nTemperature: 15.5" in output
+    assert "\nWind speed: 12.3 km/h" in output
+    assert "\nData successfully saved to PostgreSQL\n" in output
 
 
 def test_main_database_connection_error(capsys):
@@ -77,7 +75,7 @@ def test_main_database_connection_error(capsys):
     with (
         patch("builtins.input", return_value="Manchester"),
         patch("main.get_coordinates", return_value=(53.48, -2.24, {})),
-        patch("main.extract", return_value={}),
+        patch("main.fetch_weather_data", return_value={}),
         patch("main.transform_weather_data", return_value=(15.5, 12.3)),
         patch("main.transform_geo_data", return_value=("Manchester", "United Kingdom")),
         patch("main.get_connection", return_value=mock_conn),
@@ -114,7 +112,7 @@ def test_main_api_error(capsys):
     with (
         patch("builtins.input", return_value="Manchester"),
         patch("main.get_coordinates", return_value=(53.48, -2.24, {})),
-        patch("main.extract", side_effect=requests.exceptions.RequestException)
+        patch("main.fetch_weather_data", side_effect=requests.exceptions.RequestException)
     ):
         # Act
         main.main()
