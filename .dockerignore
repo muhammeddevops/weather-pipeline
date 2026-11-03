@@ -1,4 +1,5 @@
 .venv/
+.dbt-venv/
 __pycache__/
 *.py[cod]
 .git/

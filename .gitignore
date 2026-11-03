@@ -1,12 +1,13 @@
-#Environment variables and secrets
+# Environment variables and secrets
 .env
 
-#Python virtual environment
+# Virtual environments
 .venv/
+.dbt-venv/
 
-#Python cache files
+# Python cache files
 __pycache__/
 *.pyc
 
-#Generated weather JSON files
+# Generated weather JSON files
 weather*.json
